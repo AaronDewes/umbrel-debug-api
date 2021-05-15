@@ -1,5 +1,5 @@
 import {MongoClient} from 'mongodb';
-import crypto, {KeyObject} from 'crypto';
+import crypto from 'crypto';
 import {VercelRequest, VercelResponse} from '@vercel/node';
 
 let cachedDb = null;
@@ -39,9 +39,7 @@ function parseContent(content: string): ParsedLogs {
 }
 
 export default async (req: VercelRequest, res: VercelResponse) => {
-	// @ts-ignore
-	const key: KeyObject = crypto.generateKeySync('hmac', {length: 256});
-	const logKey: string = key.export().toString('hex');
+	const key: string = crypto.randomBytes(64).toString('hex');
 
 	let contents: ParsedLogs;
 
@@ -57,7 +55,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 	}
 
 	const db = await connectToDatabase(process.env.MONGODB_URI);
-	await db.collection('uploads').insertOne({...contents, key: logKey});
+	await db.collection('uploads').insertOne({...contents, key});
 
-	res.status(200).json({key});
+	res.status(200).json({logKey: key});
 };
