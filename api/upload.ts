@@ -25,7 +25,7 @@ interface ParsedLogs {
  * Splits the content into multiple sections for displaying
  */
 function parseContent(content: string): ParsedLogs {
-	let parsed: ParsedLogs;
+	const parsed: ParsedLogs = {main: '', dmesg: ''};
 	const contentSplitAtDmesg = content.split('dmesg\n-----');
 	const contentSplitAtAppLogs = content.split('App logs\n--------');
 	if (!contentSplitAtDmesg[1]) {
