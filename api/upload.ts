@@ -1,4 +1,4 @@
-import {MongoClient} from 'mongodb';
+import {Db, MongoClient} from 'mongodb';
 import crypto from 'crypto';
 import {VercelRequest, VercelResponse} from '@vercel/node';
 
@@ -57,8 +57,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 		};
 	}
 
-	const db = await connectToDatabase(process.env.MONGODB_URI);
-	await db.collection('uploads').insertOne({...contents, key});
-
+	const db : Db = await connectToDatabase(process.env.MONGODB_URI);
+	// Don't keep logs longer than two days
+	db.collection('uploads').createIndex({createdAt: 1}, {expireAfterSeconds: 60 * 60 * 24 * 2});
+	await db.collection('uploads').insertOne({...contents, key, createdAt: new Date()});
 	res.status(200).json({logKey: key});
 };
