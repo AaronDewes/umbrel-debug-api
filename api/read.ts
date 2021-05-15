@@ -8,7 +8,7 @@ async function connectToDatabase(uri) {
 		return cachedDb;
 	}
 
-	const client = await MongoClient.connect(uri, {useNewUrlParser: true});
+	const client = await MongoClient.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true});
 
 	const db = await client.db(new URL(uri).pathname.substr(1));
 	cachedDb = db;
@@ -16,6 +16,7 @@ async function connectToDatabase(uri) {
 }
 
 export default async (req: VercelRequest, res: VercelResponse) => {
+	console.log(req.body);
 	if (!req.body.key) {
 		res.status(400).send({});
 	}
