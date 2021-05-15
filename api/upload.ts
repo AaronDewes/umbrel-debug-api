@@ -27,14 +27,17 @@ interface ParsedLogs {
 function parseContent(content: string): ParsedLogs {
 	const parsed: ParsedLogs = {main: '', dmesg: ''};
 	const contentSplitAtDmesg = content.split('dmesg\n-----');
-	const contentSplitAtAppLogs = content.split('App logs\n--------');
+	const contentSplitAtAppLogs = contentSplitAtDmesg[0].split('App logs\n--------');
 	if (!contentSplitAtDmesg[1]) {
-		return null;
+		return {
+			main: contentSplitAtAppLogs[0],
+			dmesg: ''
+		};
 	}
 
-	parsed.dmesg = contentSplitAtDmesg[1];
-	parsed.main = contentSplitAtAppLogs[0];
-	parsed.apps = contentSplitAtAppLogs[1] ? contentSplitAtAppLogs[1].split('dmesg\n-----')[0] : 'No app logs found';
+	parsed.dmesg = contentSplitAtDmesg[1].trim();
+	parsed.main = contentSplitAtAppLogs[0].trim();
+	parsed.apps = contentSplitAtAppLogs[1] ? contentSplitAtAppLogs[1].trim() : 'No app logs found';
 	return parsed;
 }
 
