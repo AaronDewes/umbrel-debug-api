@@ -49,7 +49,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 	if (typeof req.body === 'string') {
 		contents = parseContent(req.body);
 	} else if (req.body.main && req.body.dmesg && req.body.apps) {
-		contents = req.body;
+		contents = {main: req.body.main, dmesg: req.body.dmesg, apps: req.body.apps};
 	} else {
 		contents = {
 			main: JSON.stringify(req.body),
