@@ -1,6 +1,9 @@
-import {Db, MongoClient} from 'mongodb';
 import crypto from 'crypto';
+import {Db, MongoClient} from 'mongodb';
 import {VercelRequest, VercelResponse} from '@vercel/node';
+import * as Sentry from '@sentry/node';
+// eslint-disable-next-line no-unused-vars
+import * as Tracing from '@sentry/tracing';
 
 let cachedDb = null;
 
@@ -16,10 +19,32 @@ async function connectToDatabase(uri) {
 	return db;
 }
 
+Sentry.init({
+	dsn: 'https://0e85586f5fbd4b50b1ee688a714deb63@o574469.ingest.sentry.io/5768424',
+	// Set tracesSampleRate to 1.0 to capture 100%
+	// of transactions for performance monitoring.
+	// We recommend adjusting this value in production
+	tracesSampleRate: 1.0
+});
+
+let transaction;
+
+if (cachedDb) {
+	transaction = Sentry.startTransaction({
+		op: 'cached-read',
+		name: 'Read Entry'
+	});
+} else {
+	transaction = Sentry.startTransaction({
+		op: 'read',
+		name: 'Read Entry'
+	});
+}
+
 interface ParsedLogs {
-  main: string;
-  dmesg: string;
-  apps?: string;
+	main: string;
+	dmesg: string;
+	apps?: string;
 }
 /**
  * Splits the content into multiple sections for displaying
@@ -41,7 +66,7 @@ function parseContent(content: string): ParsedLogs {
 	return parsed;
 }
 
-export default async (req: VercelRequest, res: VercelResponse) => {
+const handle = async (req: VercelRequest, res: VercelResponse) => {
 	res.setHeader('Access-Control-Allow-Origin', 'https://v3.debug.umbrel.tech');
 
 	const key: string = crypto.randomBytes(64).toString('hex');
@@ -64,4 +89,16 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 	db.collection('uploads').createIndex({createdAt: 1}, {expireAfterSeconds: 60 * 60 * 24 * 2});
 	await db.collection('uploads').insertOne({...contents, key, createdAt: new Date()});
 	res.status(200).json({logKey: key});
+};
+
+export default async (req: VercelRequest, res: VercelResponse) => {
+	setTimeout(() => {
+		try {
+			handle(req, res);
+		} catch (e) {
+			Sentry.captureException(e);
+		} finally {
+			transaction.finish();
+		}
+	}, 99);
 };
