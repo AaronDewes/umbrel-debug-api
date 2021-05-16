@@ -31,7 +31,7 @@ let transaction;
 if (cachedDb) {
 	transaction = Sentry.startTransaction({
 		op: 'cached-read',
-		name: 'Read Entry'
+		name: 'Read Entry (Cached DB connection)'
 	});
 } else {
 	transaction = Sentry.startTransaction({
