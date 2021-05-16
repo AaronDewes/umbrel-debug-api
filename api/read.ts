@@ -16,12 +16,7 @@ async function connectToDatabase(uri) {
 }
 
 export default async (req: VercelRequest, res: VercelResponse) => {
-	if (req.headers.origin === 'http://localhost:3000') {
-		res.setHeader('Access-Control-Allow-Origin', '*');
-	} else {
-		res.setHeader('Access-Control-Allow-Origin', 'https://ui.debug.umbrel.tech');
-	}
-
+	res.setHeader('Access-Control-Allow-Origin', 'https://v3.debug.umbrel.tech');
 	if (!req.body.key) {
 		res.status(400).send({});
 	}
