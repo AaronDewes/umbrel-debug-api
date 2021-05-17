@@ -44,25 +44,34 @@ if (cachedDb) {
 interface ParsedLogs {
 	main: string;
 	dmesg: string;
-	apps?: string;
+	apps: string;
 }
 /**
  * Splits the content into multiple sections for displaying
  */
 function parseContent(content: string): ParsedLogs {
-	const parsed: ParsedLogs = {main: '', dmesg: ''};
+	const parsed: ParsedLogs = {main: '', dmesg: '', apps: ''};
 	const contentSplitAtDmesg = content.split('dmesg\n-----');
 	const contentSplitAtAppLogs = contentSplitAtDmesg[0].split('App logs\n--------');
 	if (!contentSplitAtDmesg[1]) {
 		return {
 			main: contentSplitAtAppLogs[0],
-			dmesg: ''
+			dmesg: '',
+			apps: contentSplitAtAppLogs[1] ? contentSplitAtAppLogs[0].trim() : 'This upload has been using an outdated Umbrel version, so app logs aren\'t available.'
 		};
 	}
 
 	parsed.dmesg = contentSplitAtDmesg[1].trim();
-	parsed.main = contentSplitAtAppLogs[0].trim();
-	parsed.apps = contentSplitAtAppLogs[1] ? contentSplitAtAppLogs[1].trim() : 'No app logs found';
+
+	if (contentSplitAtAppLogs[1]) {
+		const result = contentSplitAtAppLogs[1].split('================\n==== Result ====\n================');
+		parsed.main = contentSplitAtAppLogs[0].trim() + '\n\n================\n==== Result ====\n================' + result[1];
+		parsed.apps = result[0];
+	} else {
+		parsed.main = contentSplitAtAppLogs[0].trim();
+		parsed.apps = 'This upload has been using an outdated Umbrel version, so app logs aren\'t available.';
+	}
+
 	return parsed;
 }
 
@@ -80,7 +89,8 @@ const handle = async (req: VercelRequest, res: VercelResponse) => {
 	} else {
 		contents = {
 			main: JSON.stringify(req.body),
-			dmesg: ''
+			dmesg: '',
+			apps: ''
 		};
 	}
 
@@ -88,7 +98,7 @@ const handle = async (req: VercelRequest, res: VercelResponse) => {
 	// Don't keep logs longer than two days
 	db.collection('uploads').createIndex({createdAt: 1}, {expireAfterSeconds: 60 * 60 * 24 * 2});
 	await db.collection('uploads').insertOne({...contents, key, createdAt: new Date()});
-	res.status(200).json({logKey: key});
+	res.status(200).json({key});
 };
 
 export default async (req: VercelRequest, res: VercelResponse) => {
