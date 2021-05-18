@@ -1,4 +1,4 @@
-import {MongoClient} from 'mongodb';
+import {Db, MongoClient} from 'mongodb';
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import * as Sentry from '@sentry/node';
 // eslint-disable-next-line no-unused-vars
@@ -46,7 +46,7 @@ const handle = async (req: VercelRequest, res: VercelResponse) => {
 		res.status(400).send({});
 	}
 
-	const db = await connectToDatabase(process.env.MONGODB_URI);
+	const db: Db = await connectToDatabase(process.env.MONGODB_URI);
 	const data = await db.collection('uploads').findOne({key: req.body.key});
 	res.status(200).json(data);
 };

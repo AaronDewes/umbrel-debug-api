@@ -97,7 +97,7 @@ const handle = async (req: VercelRequest, res: VercelResponse) => {
 	const db : Db = await connectToDatabase(process.env.MONGODB_URI);
 	// Don't keep logs longer than two days
 	db.collection('uploads').createIndex({createdAt: 1}, {expireAfterSeconds: 60 * 60 * 24 * 2});
-	await db.collection('uploads').insertOne({...contents, key, createdAt: new Date()});
+	await db.collection('uploads').insertOne({...contents, key, shortKey: key.substr(0, 5), createdAt: new Date()});
 	res.status(200).json({key});
 };
 
