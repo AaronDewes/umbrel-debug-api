@@ -57,7 +57,7 @@ function parseContent(content: string): ParsedLogs {
 		return {
 			main: contentSplitAtAppLogs[0],
 			dmesg: '',
-			apps: contentSplitAtAppLogs[1] ? contentSplitAtAppLogs[0].trim() : 'This upload has been using an outdated Umbrel version, so app logs aren\'t available.'
+			apps: contentSplitAtAppLogs[1] ? contentSplitAtAppLogs[0].trim() : 'App logs aren\'t available.'
 		};
 	}
 
@@ -69,7 +69,7 @@ function parseContent(content: string): ParsedLogs {
 		parsed.apps = result[0];
 	} else {
 		parsed.main = contentSplitAtAppLogs[0].trim();
-		parsed.apps = 'This upload has been using an outdated Umbrel version, so app logs aren\'t available.';
+		parsed.apps = 'App logs aren\'t available.';
 	}
 
 	return parsed;
@@ -78,7 +78,7 @@ function parseContent(content: string): ParsedLogs {
 const handle = async (req: VercelRequest, res: VercelResponse) => {
 	res.setHeader('Access-Control-Allow-Origin', 'https://v3.debug.umbrel.tech');
 
-	const key: string = crypto.randomBytes(64).toString('hex');
+	const key = crypto.randomBytes(16).toString('hex');
 
 	let contents: ParsedLogs;
 
