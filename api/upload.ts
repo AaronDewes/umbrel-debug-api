@@ -2,8 +2,6 @@ import crypto from 'crypto';
 import {Db, MongoClient} from 'mongodb';
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import * as Sentry from '@sentry/node';
-// eslint-disable-next-line no-unused-vars
-import * as Tracing from '@sentry/tracing';
 
 let cachedDb = null;
 
@@ -89,12 +87,12 @@ const handle = async (req: VercelRequest, res: VercelResponse) => {
 	} else {
 		contents = {
 			main: JSON.stringify(req.body),
-			dmesg: '',
-			apps: ''
+			dmesg: 'Invalid data received.',
+			apps: 'Invalid data received.'
 		};
 	}
 
-	const db : Db = await connectToDatabase(process.env.MONGODB_URI);
+	const db: Db = await connectToDatabase(process.env.MONGODB_URI);
 	// Don't keep logs longer than two days
 	db.collection('uploads').createIndex({createdAt: 1}, {expireAfterSeconds: 60 * 60 * 24 * 2});
 	await db.collection('uploads').insertOne({...contents, key, shortKey: key.substr(0, 5), createdAt: new Date()});

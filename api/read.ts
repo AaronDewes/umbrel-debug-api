@@ -1,8 +1,6 @@
 import {Db, MongoClient} from 'mongodb';
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import * as Sentry from '@sentry/node';
-// eslint-disable-next-line no-unused-vars
-import * as Tracing from '@sentry/tracing';
 
 let cachedDb = null;
 

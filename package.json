@@ -1,18 +1,18 @@
 {
   "name": "umbrel-debug-api",
   "devDependencies": {
-    "@types/mongodb": "^3.6.12",
-    "@types/node": "^15.3.0",
-    "@typescript-eslint/eslint-plugin": "^4.23.0",
-    "@typescript-eslint/parser": "^4.23.0",
+    "@types/mongodb": "^3.6.14",
+    "@types/node": "^15.3.1",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
+    "@typescript-eslint/parser": "^4.24.0",
     "@vercel/node": "^1.10.0",
     "eslint": "^7.26.0",
     "eslint-config-xo": "^0.36.0"
   },
   "dependencies": {
-    "@sentry/node": "^6.3.6",
-    "@sentry/tracing": "^6.3.6",
-    "mongodb": "^3.6.6"
+    "@sentry/node": "^6.4.1",
+    "@sentry/tracing": "^6.4.1",
+    "mongodb": "^3.6.7"
   },
   "license": "AGPL-3.0-or-later"
 }
