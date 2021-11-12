@@ -39,7 +39,7 @@ if (cachedDb) {
 }
 
 const handle = async (req: VercelRequest, res: VercelResponse) => {
-	res.setHeader('Access-Control-Allow-Origin', 'https://v3.debug.umbrel.tech');
+	res.setHeader('Access-Control-Allow-Origin', 'https://debug.runcitadel.space');
 	if (!req.body.key) {
 		res.status(400).send({});
 	}
