@@ -1,4 +1,3 @@
-# Umbrel debug server: API
+# Citadel debug server API
 
-This is the API used for Umbrel's debug server in version 3.
-It uses MongoDB Atlas as database to store the logs.
+This is the API used for Citadel's debug server which uses a MongoDB database as database to store the logs.
